@@ -368,6 +368,8 @@ class Zdmfz:
                     print("已经自动延时中2222222")
                     esc4()
                     self.zdjdt()  # 自动进地图开挖
+                    esc4()
+                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
                 else:
                     zdys(self.handle)  # 打开自动延时界面并点击+号一次
                     self.QrZdys.ReScreenshot()  # 实时截图判断是否有魔方阵免费次数
@@ -376,11 +378,15 @@ class Zdmfz:
                         print("有免费延长次数222222222")
                         zdysqr(self.handle)  # 确认点击自动延时
                         self.zdjdt()  # 自动进地图开挖
+                        esc4()
+                        self.Cl1Sdms.Jrsdms()  # 进入省电模式
                     # 如果无免费的延时次数
                     else:  # 如果无免费的延时次数
                         print("没有免费延长次数2222222")
                         esc4()
                         self.zdjdt()  # 自动进地图开挖
+                        esc4()
+                        self.Cl1Sdms.Jrsdms()  # 进入省电模式
             # 如果没有次数
             else:
                 print("没有次数")
@@ -407,6 +413,8 @@ class Zdmfz:
                 print("已经自动延时中2222222")
                 esc4()
                 self.zdjdt()  # 自动进地图开挖
+                esc4()
+                self.Cl1Sdms.Jrsdms()  # 进入省电模式
             else:
                 zdys(self.handle)  # 打开自动延时界面并点击+号一次
                 self.QrZdys.ReScreenshot()  # 实时截图判断是否有魔方阵免费次数
@@ -415,11 +423,15 @@ class Zdmfz:
                     print("有免费延时次数++++++++")
                     zdysqr(self.handle)  # 确认点击自动延时
                     self.zdjdt()  # 自动进地图开挖
+                    esc4()
+                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
                 # 如果无免费的延时次数
                 else:  # 如果无免费的延时次数
                     esc4()
                     print("无免费延时次数++++++++")
                     self.zdjdt()  # 自动进地图开挖
+                    esc4()
+                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
 
 
 
@@ -430,7 +442,7 @@ i = 0
 while i < 90:
     Cl1Zdmfz.gogogo()
     i = i + 1
-    time.sleep(60)
+    time.sleep(300)
 # # # ddd = FindPicAndDoSomething(RC.Clienthandles[0], "kyd.png")
 # qqq = FindPicAndDoSomething(RC.Clienthandles[1], "htzw.png")
 # aaa = FindPicAndDoSomething(RC.Clienthandles[1], "kyd.png")
