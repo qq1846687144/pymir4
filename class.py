@@ -99,6 +99,97 @@ class FindPicAndDoSomething:
             time.sleep(0.1)
             pyautogui.click(self.center[0] + x, self.center[1] + y)  # 鼠标点击中心
 
+    def ClickCenter5(self, x, y):  # 点击找图中心点，x，y为中心点的偏移
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        if self.confidence > 0.5:
+            time.sleep(0.1)
+            pyautogui.moveTo(self.center[0] + x, self.center[1] + y, duration=1)  # 鼠标漂移至中心
+            time.sleep(0.1)
+            pyautogui.click(self.center[0] + x, self.center[1] + y)  # 鼠标点击中心
+            print("单击图片" + self.image)
+
+    def ClickCenter8(self, x, y):  # 点击找图中心点，x，y为中心点的偏移
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        if self.confidence > 0.8:
+            time.sleep(0.1)
+            pyautogui.moveTo(self.center[0] + x, self.center[1] + y, duration=1)  # 鼠标漂移至中心
+            time.sleep(0.1)
+            pyautogui.click(self.center[0] + x, self.center[1] + y)  # 鼠标点击中心
+            print("单击图片" + self.image)
+
+
+# 前台截图并找图，输入为句柄和待找图片，截图范围排除右侧功能区
+class FindPicAndDoSomething2:
+    """找图和做事基类"""
+    FindPicCont = 0
+
+    def __init__(self, handle, image):  # 传入参数为文件名称（用文本记录客户端名称，客户端名称为窗口的标题名）
+        self.bmp = None  # 临时截图
+        self.handle = handle  # 传入的句柄
+        self.image = image  # 传入的图片
+        FindPicAndDoSomething.FindPicCont += 1  # 每增加一个对比图片的类就将计数加1
+        self.confidence = 0  # 默认置信度为0
+        self.dic = None  # 默认找图返回字典为空
+        self.center = 0  # 默认找图中心点为0
+
+    def ReScreenshot(self):  # 重新截图并找原图
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        self.dic = None
+        self.confidence = 0  # 默认置信度为0
+        self.FindPic()
+
+    def ReFindPic(self, newimage):  # 重新截图并找新图
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        self.dic = None
+        self.image = newimage  # 重新定义要查找的图片
+        self.bmp = pyautogui.screenshot(region=[0, 0, 940, 745])  # 前台截图
+        self.bmp = cv2.cvtColor(np.asarray(self.bmp), cv2.COLOR_RGB2BGR)  # cvtColor用于在图像中不同的色彩空间进行转换,用于后续处理。
+        self.FindPic()
+
+    def FindPic(self):  # 找图
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        self.bmp = pyautogui.screenshot(region=[0, 0, 940, 745])  # 前台截图
+        self.bmp = cv2.cvtColor(np.asarray(self.bmp), cv2.COLOR_RGB2BGR)  # cvtColor用于在图像中不同的色彩空间进行转换,用于后续处理。
+        self.dic = aircv.find_template(self.bmp, aircv.imread(self.image))  # 查找后台截图与前台输入图片进行对比
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        if self.dic:
+            print("找到图片" + self.image)
+            self.confidence = self.dic['confidence']
+            print("图片" + self.image + "可信度为：", self.confidence)
+            self.center = self.dic['result']
+        else:
+            print("未找到图片" + self.image)
+        return self.dic
+
+    def FindPicConfidence(self):  # 返回找图相似度
+        return self.confidence
+
+    def FindPicCenter(self):  # 返回找图中心点
+        return self.center
+
+    def ClickCenter(self, x, y):  # 点击找图中心点，x，y为中心点的偏移
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        if self.confidence > 0.9:
+            time.sleep(0.1)
+            pyautogui.moveTo(self.center[0] + x, self.center[1] + y, duration=1)  # 鼠标漂移至中心
+            time.sleep(0.1)
+            pyautogui.click(self.center[0] + x, self.center[1] + y)  # 鼠标点击中心
+            print("单击图片" + self.image)
+
+    def NoPicClickCenter(self, x, y):  # 没有找到图点击某个点，x，y为中心点的偏移
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        if self.confidence < 0.9:
+            time.sleep(0.1)
+            pyautogui.moveTo(self.center[0] + x, self.center[1] + y, duration=1)  # 鼠标漂移至中心
+            time.sleep(0.1)
+            pyautogui.click(self.center[0] + x, self.center[1] + y)  # 鼠标点击中心
+
 
 # 省电模式类，包含退出省电模式和进入省电模式
 class Sdms:
@@ -110,6 +201,7 @@ class Sdms:
     def Tcsdms(self):
         ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
         ckcz.set_down(self.handle)  # 取消置顶窗口
+        esc4()
         pyautogui.moveTo(520.0, 520.0, duration=1)
         pyautogui.mouseDown()  # 鼠标按下
         pyautogui.dragTo(740, 520, duration=1)  # 拖拽
@@ -128,10 +220,12 @@ class Sdms:
         time.sleep(0.1)
         pyautogui.press('esc')  # 按下并释放esc
         time.sleep(0.1)
+        esc4()
 
     def Jrsdms(self):  # 进入省电模式
         ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
         ckcz.set_down(self.handle)  # 取消置顶窗口
+        esc4()
         pyautogui.press('esc')  # 按下并释放esc
         time.sleep(0.1)
         pyautogui.press('esc')  # 按下并释放esc
@@ -149,6 +243,7 @@ class Sdms:
         pyautogui.click(150.0, 560.0)  # 省电模式
         print("点击省电模式")
         time.sleep(0.1)
+        esc4()
 
 
 # 进入魔方阵待确认窗口，也就是没点进入的时候
@@ -217,7 +312,7 @@ def esc4():
     pyautogui.press('esc')  # 按下并释放esc
     time.sleep(0.1)
     pyautogui.press('esc')  # 按下并释放esc
-    time.sleep(0.1)
+    time.sleep(2)
 
 
 # 进入自动延时界面，并点击一下
@@ -296,7 +391,7 @@ def ys(handle):  # 点击延时2次
 # 点击复活按钮
 def fh():
     """点复活"""
-    pyautogui.moveTo(1140.0, 640.0, duration=0.5)  ##1140 640复活
+    pyautogui.moveTo(1140.0, 640.0, duration=0.5)  # 1140 640复活
     time.sleep(0.1)
     pyautogui.click(1140.0, 640.0)
     time.sleep(0.1)
@@ -337,6 +432,7 @@ class Zdmfz:
         if self.SFzdwk.confidence > 0.9:
             print("在自动挖矿")
         else:
+            time.sleep(1)
             pyautogui.press('n')  # 按下快捷键自动挖矿
             print("已经在自动挖矿")
 
@@ -350,7 +446,7 @@ class Zdmfz:
             self.Cl1Sdms.Tcsdms()  # 退出省电模式
         else:
             print("不在省电模式")
-
+        esc4()
         self.Cl1Mfz.ReScreenshot()  # 重新截图找图，是否在魔方阵，重置可信度
         self.MfzZw.ReScreenshot()  # 重新截图找图，是否在魔方阵某个之屋内，重置可信度
         # 如果不在魔方阵
@@ -434,15 +530,105 @@ class Zdmfz:
                     self.Cl1Sdms.Jrsdms()  # 进入省电模式
 
 
+# 自动主线任务
+class ZdZx:
+    """自动主线任务"""
+
+    def __init__(self, handle):  # 传入参数为文件名称（用文本记录客户端名称，客户端名称为窗口的标题名）
+        self.handle = handle  # 传入的句柄
+        self.Cl1Sdms = Sdms(self.handle)
+        self.Cl1IsSdms = FindPicAndDoSomething(self.handle, "sdms.png")  # 判断是否在省电模式
+        # self.ZXsg = FindPicAndDoSomething(self.handle, "ZXsg.png")  # 判断是否在主线杀怪
+        # self.ZXrw = FindPicAndDoSomething(self.handle, "ZXrw.png")  # 判断是否在主线任务跑路
+        self.ZXdhjx = FindPicAndDoSomething(self.handle, "ZXdhjx.png")  # 判断是否有对话继续按钮
+        self.ZXdh = FindPicAndDoSomething2(self.handle, "ZXdh.png")  # 判断是否有主线对话
+        self.ZXtg = FindPicAndDoSomething(self.handle, "ZXtg.png")  # 判断是否有抓手
+        self.ZXbs = FindPicAndDoSomething(self.handle, "ZXbs.png")  # 判断是否在主线任务
+        self.ZXcj = FindPicAndDoSomething(self.handle, "ZXcj.png")  # 判断是否有采集
+        self.ZXzs = FindPicAndDoSomething(self.handle, "ZXzs.png")  # 判断是否有抓手
+
+    def ZdZxGo(self):
+        time.sleep(1)
+        self.Cl1IsSdms.ReScreenshot()
+        print("正在判断是否在省电模式")
+        # 在省电模式则退出省电模式，不在不干任何事情
+        if self.Cl1IsSdms.confidence > 0.9:
+            print("在省电模式")
+            print("省电模式可信度:", self.Cl1IsSdms.confidence)
+            self.Cl1Sdms.Tcsdms()  # 退出省电模式
+            time.sleep(0.1)
+            esc4()
+        else:
+            print("不在省电模式")
+        # 有跳过就点，没有就不敢任何事情
+        self.ZXtg.ReScreenshot()
+        print("正在判断是否有跳过")
+        if self.ZXtg.confidence > 0.9:
+            print("有跳过按钮")
+            print("跳过按钮可信度:", self.ZXtg.confidence)
+            self.ZXtg.ClickCenter(0, 0)
+            time.sleep(0.1)
+            pyautogui.moveTo(640, 290)  # 鼠标点击屏幕中心
+        else:
+            print("没有跳过按钮")
+        # 有对话框就点，没有就不敢任何事情
+        self.ZXdh.ReScreenshot()
+        print("正在判断是否有对话按钮")
+        if self.ZXdh.confidence > 0.9:
+            print("有对话按钮")
+            print("对话按钮可信度:", self.ZXdh.confidence)
+            self.ZXdh.ClickCenter(0, 0)
+            time.sleep(0.1)
+            pyautogui.moveTo(640, 290)  # 鼠标点击屏幕中心
+        else:
+            print("没有对话按钮")
+        # 在对话就一直点对话，不在不干任何事情
+        self.ZXdhjx.ReScreenshot()
+        print("正在判断是否在对话中")
+        while self.ZXdhjx.confidence > 0.8:
+            print("在对话中")
+            print("在对话的可信度:", self.ZXdhjx.confidence)
+            time.sleep(0.1)
+            self.ZXdhjx.ClickCenter(0, 0)
+            time.sleep(0.1)
+            self.ZXdhjx.ClickCenter(0, 0)
+            time.sleep(0.1)
+            self.ZXdhjx.ReScreenshot()
+        self.ZXbs.ReScreenshot()
+        print("正在判断是否已点击主线任务")
+        if self.ZXbs.confidence > 0.8:
+            print("没有点")
+            time.sleep(0.2)
+            self.ZXbs.ClickCenter8(30, 10)
+            print("主线任务标识的可信度:", self.ZXbs.confidence)
+        else:
+            print("已经点了自动主线任务")
+            self.ZXcj.ReScreenshot()
+            print("找到采集图片的可信度:", self.ZXcj.confidence)
+            self.ZXcj.ClickCenter5(0, 0)
+            pyautogui.click(640, 290)  # 鼠标点击屏幕中心
+            time.sleep(0.1)
+            self.ZXzs.ReScreenshot()
+            print("找到抓手图片的可信度:", self.ZXzs.confidence)
+            self.ZXzs.ClickCenter5(0, 0)
+        time.sleep(0.1)
 
 
 RC = ReadClient("client.txt")  # 读取客户端配置文件并实例化客户端配置文件类
+# Cl1ZdZx = ZdZx(RC.Clienthandles[1])
+# i = 0
+# while i < 900:
+#     esc4()
+#     Cl1ZdZx.ZdZxGo()
+#     i = i + 1
+#     time.sleep(0.5)
 Cl1Zdmfz = Zdmfz(RC.Clienthandles[0], "htzw.png")
 i = 0
 while i < 90:
+    esc4()
     Cl1Zdmfz.gogogo()
     i = i + 1
-    time.sleep(300)
+    time.sleep(20)
 # # # ddd = FindPicAndDoSomething(RC.Clienthandles[0], "kyd.png")
 # qqq = FindPicAndDoSomething(RC.Clienthandles[1], "htzw.png")
 # aaa = FindPicAndDoSomething(RC.Clienthandles[1], "kyd.png")
