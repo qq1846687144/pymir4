@@ -6,8 +6,10 @@ import cv2
 import numpy as np
 import ckcz
 
-
 # 读取客户端配置文件并实例化客户端配置文件类，输入为存储客户端名称的文本
+import htjt
+
+
 class ReadClient:
     """客户端基类"""
     ClientCount = 0  # 客户端计数
@@ -312,7 +314,7 @@ def esc4():
     pyautogui.press('esc')  # 按下并释放esc
     time.sleep(0.1)
     pyautogui.press('esc')  # 按下并释放esc
-    time.sleep(2)
+    time.sleep(0.1)
 
 
 # 进入自动延时界面，并点击一下
@@ -415,25 +417,48 @@ class Zdmfz:
         self.QrZdys = FindPicAndDoSomething(self.handle, "mfzys.png")  # 判断是否有魔方阵免费次数
         self.MfzZw = FindPicAndDoSomething(self.handle, "mfzzw.png")  # 判断是否在魔方阵某个之屋内
         self.SFyys = FindPicAndDoSomething(self.handle, "yys.png")  # 判断是否在魔方阵某个之屋内
+        self.CS = 3  # 设置默认次数为3
 
     # 自动进地图
     def zdjdt(self):
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        time.sleep(0.1)
         self.HTzw.ReScreenshot()  # 重新截屏是否在想要的地图，重置可信度
-        while self.HTzw.confidence < 0.9:  # 不在想要的地图
+        time.sleep(0.1)
+        if self.HTzw.confidence < 0.9:  # 不在想要的地图
             print("不在想要的地图")
-            time.sleep(0.5)
-            self.Kyd.ClickCenter(0, -37)  # 点击移动按钮-37是其距离可移动三个字的距离
+            time.sleep(0.1)
+            # self.Kyd.ReScreenshot()  # 重新截屏是否可以移动，重置可信度
+            # time.sleep(0.1)
+            # self.Kyd.ClickCenter(0, -37)  # 点击移动按钮-37是其距离可移动三个字的距离
             print("移动中")
+            pyautogui.moveTo(1240, 240, duration=0.2)  # 移动
             time.sleep(0.1)
-            self.Kyd.ReScreenshot()  # 重新截屏是否可以移动，重置可信度
-            time.sleep(0.1)
-            self.HTzw.ReScreenshot()  # 重新截屏是否在想要的地图，重置可信度
+            pyautogui.click(1240, 240)  # 移动
+            # time.sleep(0.1)
+            # self.Kyd.ReScreenshot()  # 重新截屏是否可以移动，重置可信度
+            # time.sleep(0.1)
+            # self.HTzw.ReScreenshot()  # 重新截屏是否在想要的地图，重置可信度
+        else:
+            print("在想要的地图2222222111111")
+
+    def pdzdwk(self):
+        ckcz.set_top(self.handle)  # 置顶窗口（必需前台找图，所以置顶）
+        ckcz.set_down(self.handle)  # 取消置顶窗口
+        time.sleep(0.1)
         self.SFzdwk.ReScreenshot()  # 实时截图判断是否自动挖矿
+        time.sleep(0.1)
         if self.SFzdwk.confidence > 0.9:
             print("在自动挖矿")
+            print("正在采矿可信度:", self.SFzdwk.confidence)
         else:
-            time.sleep(1)
-            pyautogui.press('n')  # 按下快捷键自动挖矿
+            time.sleep(0.1)
+            htjt.key_down(self.handle, 'n')
+            time.sleep(0.05)
+            htjt.key_up(self.handle, 'n')
+            # pyautogui.press('n')  # 按下快捷键自动挖矿
+            print("正在采矿可信度:", self.SFzdwk.confidence)
             print("已经在自动挖矿")
 
     def gogogo(self):
@@ -447,88 +472,92 @@ class Zdmfz:
         else:
             print("不在省电模式")
         esc4()
-        self.Cl1Mfz.ReScreenshot()  # 重新截图找图，是否在魔方阵，重置可信度
-        self.MfzZw.ReScreenshot()  # 重新截图找图，是否在魔方阵某个之屋内，重置可信度
-        # 如果不在魔方阵
-        if self.Cl1Mfz.confidence < 0.9 and self.MfzZw.confidence < 0.9:  # 如果不在魔方阵
-            print("不在魔方阵++++++++")
-            mfz(self.handle)  # 点击到魔方阵层数选择页面
-            self.MfzCs.ReScreenshot()  # 判断魔方阵次数，判断是否找到无次数的图片，>0.9无次数，小于还有次数
-            # 如果有次数
-            if self.MfzCs.confidence < 0.9:  # 如果有次数
-                print("有次数")
-                mfzqr(self.handle)  # 确认进入魔方阵
-                time.sleep(5)
+        if self.CS > 1:  # 如果次数大于1
+            self.Cl1Mfz.ReScreenshot()  # 重新截图找图，是否在魔方阵，重置可信度
+            self.MfzZw.ReScreenshot()  # 重新截图找图，是否在魔方阵某个之屋内，重置可信度
+            # 如果不在魔方阵
+            if self.Cl1Mfz.confidence < 0.9 and self.MfzZw.confidence < 0.9:  # 如果不在魔方阵
+                print("不在魔方阵++++++++")
+                mfz(self.handle)  # 点击到魔方阵层数选择页面
+                self.MfzCs.ReScreenshot()  # 判断魔方阵次数，判断是否找到无次数的图片，>0.9无次数，小于还有次数
+                # 如果有次数
+                if self.MfzCs.confidence < 0.9:  # 如果有次数
+                    print("有次数")
+                    mfzqr(self.handle)  # 确认进入魔方阵
+                    time.sleep(5)
+                    self.SFyys.ReScreenshot()  # 实时截图判断是否已经有延时
+                    if self.SFyys.confidence > 0.9:
+                        print("已经自动延时中2222222")
+                        time.sleep(0.1)
+                        self.zdjdt()  # 自动进地图
+                        time.sleep(0.1)
+                    else:
+                        zdys(self.handle)  # 打开自动延时界面并点击+号一次
+                        time.sleep(0.1)
+                        self.QrZdys.ReScreenshot()  # 实时截图判断是否有魔方阵免费次数
+                        # 如果有免费的延时次数
+                        if self.QrZdys.confidence > 0.9:  # 如果有免费次数
+                            print("有免费延长次数222222222")
+                            zdysqr(self.handle)  # 确认点击自动延时
+                            self.zdjdt()  # 自动进地图开挖
+                        # 如果无免费的延时次数
+                        else:  # 如果无免费的延时次数
+                            print("没有免费延长次数2222222")
+                            time.sleep(0.1)
+                            esc4()
+                            time.sleep(0.1)
+                            self.zdjdt()  # 自动进地图开挖
+                            time.sleep(0.1)
+                            self.pdzdwk()  # 判断自动挖矿
+                # 如果没有次数
+                else:
+                    print("没有次数")
+                    self.CS = 0  # 设置次数为0
+                    time.sleep(0.1)
+                    esc4()
+                    time.sleep(0.2)
+                    self.pdzdwk()  # 判断自动挖矿
+                # 如果在魔方阵
+            # 如果在魔方阵
+            else:  # 如果在魔方阵
+                print("在魔方阵++++++++")
+                time.sleep(0.1)
                 self.SFyys.ReScreenshot()  # 实时截图判断是否已经有延时
                 if self.SFyys.confidence > 0.9:
                     print("已经自动延时中2222222")
-                    esc4()
-                    self.zdjdt()  # 自动进地图开挖
-                    esc4()
-                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
+                    time.sleep(0.1)
+                    self.zdjdt()  # 自动进地图
+                    time.sleep(0.1)
+                    self.pdzdwk()  # 判断自动挖矿
                 else:
-                    zdys(self.handle)  # 打开自动延时界面并点击+号一次
-                    self.QrZdys.ReScreenshot()  # 实时截图判断是否有魔方阵免费次数
-                    # 如果有免费的延时次数
-                    if self.QrZdys.confidence > 0.9:  # 如果有免费次数
-                        print("有免费延长次数222222222")
-                        zdysqr(self.handle)  # 确认点击自动延时
-                        self.zdjdt()  # 自动进地图开挖
-                        esc4()
-                        self.Cl1Sdms.Jrsdms()  # 进入省电模式
-                    # 如果无免费的延时次数
-                    else:  # 如果无免费的延时次数
-                        print("没有免费延长次数2222222")
-                        esc4()
-                        self.zdjdt()  # 自动进地图开挖
-                        esc4()
-                        self.Cl1Sdms.Jrsdms()  # 进入省电模式
-            # 如果没有次数
-            else:
-                print("没有次数")
-                esc4()  # 退回主界面
-                self.SFzdwk.ReScreenshot()  # 重新查看是否自动挖矿
-                # 在自动挖矿
-                if self.SFzdwk.confidence > 0.9:
-                    print("在自动挖矿")
-                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
-                # 不在自动挖矿，则点击自动挖矿
-                else:
-                    print("将要开始自动挖矿")
-                    time.sleep(1)
-                    pyautogui.press('n')  # 按下快捷键自动挖矿
-                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
-            # 如果在魔方阵
-        # 如果在魔方阵
-        else:  # 如果在魔方阵
+                    if self.CS > 1:  # 如果次数大于1
+                        zdys(self.handle)  # 打开自动延时界面并点击+号一次
+                        self.QrZdys.ReScreenshot()  # 实时截图判断是否有魔方阵免费次数
+                        # 如果有免费的延时次数
+                        if self.QrZdys.confidence > 0.9:  # 如果有免费次数
+                            print("有免费延时次数++++++++")
+                            zdysqr(self.handle)  # 确认点击自动延时
+                            esc4()
+                            time.sleep(0.1)
+                            self.zdjdt()  # 自动进地图开挖
+                            time.sleep(0.1)
+                            self.pdzdwk()  # 判断自动挖矿
+                        # 如果无免费的延时次数
+                        else:  # 如果无免费的延时次数
+                            print("无免费延时次数++++++++")
+                            esc4()
+                            time.sleep(0.1)
+                            self.zdjdt()  # 自动进地图开挖
+                            time.sleep(0.1)
+                            self.pdzdwk()  # 判断自动挖矿
+                            self.CS = 0  # 设置默认次数为3
+                    else:
+                        print("无免费延时次数++++++++")
+        else:
+            print("没有次数了")
             esc4()
-            print("在魔方阵++++++++")
-            time.sleep(5)
-            self.SFyys.ReScreenshot()  # 实时截图判断是否已经有延时
-            if self.SFyys.confidence > 0.9:
-                print("已经自动延时中2222222")
-                esc4()
-                self.zdjdt()  # 自动进地图开挖
-                esc4()
-                self.Cl1Sdms.Jrsdms()  # 进入省电模式
-            else:
-                zdys(self.handle)  # 打开自动延时界面并点击+号一次
-                self.QrZdys.ReScreenshot()  # 实时截图判断是否有魔方阵免费次数
-                # 如果有免费的延时次数
-                if self.QrZdys.confidence > 0.9:  # 如果有免费次数
-                    print("有免费延时次数++++++++")
-                    zdysqr(self.handle)  # 确认点击自动延时
-                    self.zdjdt()  # 自动进地图开挖
-                    esc4()
-                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
-                # 如果无免费的延时次数
-                else:  # 如果无免费的延时次数
-                    esc4()
-                    print("无免费延时次数++++++++")
-                    self.zdjdt()  # 自动进地图开挖
-                    esc4()
-                    self.Cl1Sdms.Jrsdms()  # 进入省电模式
-
+            time.sleep(0.1)
+            self.pdzdwk()  # 判断自动挖矿
 
 # 自动主线任务
 class ZdZx:
@@ -585,7 +614,7 @@ class ZdZx:
         # 在对话就一直点对话，不在不干任何事情
         self.ZXdhjx.ReScreenshot()
         print("正在判断是否在对话中")
-        while self.ZXdhjx.confidence > 0.8:
+        while self.ZXdhjx.confidence > 0.9:
             print("在对话中")
             print("在对话的可信度:", self.ZXdhjx.confidence)
             time.sleep(0.1)
@@ -624,11 +653,11 @@ RC = ReadClient("client.txt")  # 读取客户端配置文件并实例化客户�
 #     time.sleep(0.5)
 Cl1Zdmfz = Zdmfz(RC.Clienthandles[0], "htzw.png")
 i = 0
-while i < 90:
+while i < 900:
     esc4()
     Cl1Zdmfz.gogogo()
     i = i + 1
-    time.sleep(20)
+    time.sleep(1)
 # # # ddd = FindPicAndDoSomething(RC.Clienthandles[0], "kyd.png")
 # qqq = FindPicAndDoSomething(RC.Clienthandles[1], "htzw.png")
 # aaa = FindPicAndDoSomething(RC.Clienthandles[1], "kyd.png")
